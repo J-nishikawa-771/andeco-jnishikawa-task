@@ -1,10 +1,10 @@
-# andeco-FY2026-q4-nishikawa-task
+# andeco-tasks-nishikawa
 
 ---
 
 ## Repository Purpose
 
-This repository manages personal tasks for Nishikawa Jun (FY26 Q4) using a Markdown-first approach, integrated with GitHub Issues, GitHub Projects, HubSpot, and Asana.
+日々のタスクを管理・メモする
 
 ## Basic Operation Flow
 

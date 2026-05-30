@@ -1,0 +1,65 @@
+# sync_tasks.yml
+#
+# GitHub Actions workflow: Sync Markdown tasks to GitHub Issues and GitHub Projects.
+#
+# Trigger: push to main when any file under tasks/**/*.md changes.
+#
+# Required secret:
+#   PROJECT_PAT - Personal Access Token with scopes: repo, project
+#               - Classic PAT or fine-grained PAT with:
+#                 * repo (full)
+#                 * read:project + write:project (for Project v2 GraphQL API)
+#               - Set in: Repository Settings > Secrets and variables > Actions
+#
+# Note: The default GITHUB_TOKEN does NOT have project scope.
+#       PROJECT_PAT must be set manually.
+
+name: Sync Tasks to GitHub Issues and Projects
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "tasks/**/*.md"
+
+jobs:
+  sync:
+    name: Sync Markdown tasks to GitHub
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install PyGithub python-dotenv
+
+      - name: Run sync script
+        env:
+          # PROJECT_PAT: Personal Access Token (repo + project scope)
+          # Set this secret in: Settings > Secrets and variables > Actions
+          PROJECT_PAT: ${{ secrets.PROJECT_PAT }}
+          GITHUB_REPO: ${{ github.repository }}
+          # PROJECT_NUMBER: Set the GitHub Project number for this repository
+          PROJECT_NUMBER: "1"
+        run: |
+          python scripts/sync_md_to_github.py
+
+      # TODO (Issue #2): After sync_md_to_github.py is fully implemented,
+      # add a step to commit and push updated Markdown files (with issue numbers written back)
+      # - name: Commit updated Markdown files
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git add tasks/**/*.md
+      #     git diff --staged --quiet || git commit -m "chore: write back github_issue fields [skip ci]"
+      #     git push

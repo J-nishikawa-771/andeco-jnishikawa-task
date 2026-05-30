@@ -2,31 +2,31 @@
 
 ---
 
-## Repository Purpose
+## リポジトリの目的
 
-日々のタスクを管理・メモする
+日々のタスクをMarkdownで管理し、GitHub Issue・GitHub Projectと連携して運用する。
 
-## Basic Operation Flow
+## 基本運用フロー
 
-1. Edit Markdown files in VS Code under `tasks/FY26/Q4/`
-2. Commit and push to GitHub (reference issue number in commit message)
-3. GitHub Actions detects changes to `tasks/**/*.md`
-4. `sync_md_to_github.py` creates / updates GitHub Issues automatically
-5. GitHub Project reflects status, priority, and due dates
+1. VS Code で `tasks/FY26/Q4/` 配下のMarkdownファイルを編集する
+2. Issue番号を含めてコミット・プッシュする（例：`#1 Add sales tasks`）
+3. GitHub ActionsがMarkdownの変更を検知する
+4. `sync_md_to_github.py` が自動でGitHub Issueを作成・更新する（実装予定）
+5. GitHub ProjectにステータスやDue Dateが反映される
 
-## Markdown and GitHub Integration
+## MarkdownとGitHubの関係
 
-| Layer | Role |
+| レイヤー | 役割 |
 | --- | --- |
-| Markdown | Source of truth for task definitions and notes |
-| GitHub Issue | Execution unit — one issue per task |
-| GitHub Project | Kanban view and status management |
+| Markdown | タスク定義・メモの原本 |
+| GitHub Issue | 実行単位（タスク1件 = Issue1件） |
+| GitHub Project | カンバン表示・ステータス管理 |
 
-- `task_id` links a Markdown task to its GitHub Issue
-- `github_issue` field in the yaml block stores the issue number after sync
-- `status` in Markdown is the initial value; authoritative status lives in GitHub Project
+- `task_id` でMarkdownタスクとGitHub Issueを紐づける
+- 同期後、yamlブロックの `github_issue` フィールドにIssue番号が書き込まれる
+- Markdown内の `status` は初期値。ステータスの正はGitHub Project
 
-## Directory Structure
+## ディレクトリ構成
 
 ```
 tasks/FY26/Q4/
@@ -37,56 +37,56 @@ tasks/FY26/Q4/
 └── 05_others/       others.md
 ```
 
-## VS Code Editing Policy
+## VS Codeでの編集方針
 
-- Edit task files under `tasks/FY26/Q4/`
-- Use the task template format consistently (see below)
-- Do not create per-project or per-deal files; use sections within category files
-- Commit with issue reference (e.g., `#1 Initialize structure`)
+- `tasks/FY26/Q4/` 配下のファイルを編集する
+- タスクテンプレートの書式を統一する（下記参照）
+- 案件・プロジェクトごとにファイルを分けず、カテゴリファイル内のセクションで管理する
+- コミットメッセージには必ずIssue番号を含める（例：`#1 Initialize structure`）
 
-## Claude Usage Scope
+## Claudeを使う範囲
 
-- Markdown editing and diff review in VS Code
-- Commit / push assistance
-- HubSpot deal extraction (owner_id: 162042066)
-- Asana task extraction (workspace: 株式会社Andeco, user GID: 1210852746876577)
-- GitHub Issue creation and Project management
+- VS Code上でのMarkdown編集・差分確認
+- コミット・プッシュの補助
+- HubSpotからの担当案件抽出（owner_id: 162042066）
+- Asanaからの担当タスク抽出（ワークスペース：株式会社Andeco、user GID: 1210852746876577）
+- GitHub Issue作成・Projectへの追加
 
-## Status Definitions
+## ステータス定義
 
-| Status | Meaning |
+| ステータス | 意味 |
 | --- | --- |
-| Backlog | Not started yet |
-| Todo | Confirmed to do |
-| In Progress | Currently working |
-| Paused | Temporarily stopped |
-| Waiting | Waiting for client or team response |
-| Done | Completed |
+| Backlog | まだ着手しない |
+| Todo | やることが確定している |
+| In Progress | 作業中 |
+| Paused | 一時停止 |
+| Waiting | 先方確認待ち・社内確認待ち |
+| Done | 完了 |
 
-Authoritative status is managed in **GitHub Project**. The `status` field in Markdown is the initial value.
+ステータスの正は **GitHub Project** で管理する。Markdown内の `status` は初期値または参考値。
 
-## task_id Rules
+## task_idのルール
 
-Format: `FY26-Q4-{CATEGORY}-{NUMBER}`
+フォーマット：`FY26-Q4-{カテゴリコード}-{番号}`
 
-| Category code | Scope |
+| カテゴリコード | 対象 |
 | --- | --- |
-| MG | Management |
-| SA | Sales |
-| PJ | Projects |
-| FB | Finance and Billing |
-| HR | People and Organization |
-| IS | Information Systems |
-| OT | Others |
+| MG | 経営 |
+| SA | 営業 |
+| PJ | プロジェクト |
+| FB | 財務会計・請求 |
+| HR | 人事・組織開発 |
+| IS | 情シス |
+| OT | その他 |
 
-- Numbers are zero-padded to 3 digits (001, 002, ...)
-- IDs must be unique across all files
-- Once assigned, a task_id must not be changed
+- 番号は3桁ゼロ埋め（001, 002, ...）
+- IDはファイル横断で重複禁止
+- 一度付与したtask_idは変更しない
 
-## Task Template
+## タスクテンプレート
 
 ```md
-#### FY26-Q4-XX-001: Task name
+#### FY26-Q4-XX-001: タスク名
 
 \`\`\`yaml
 task_id: FY26-Q4-XX-001
